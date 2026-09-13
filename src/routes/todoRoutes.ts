@@ -1,11 +1,17 @@
 import { Router } from 'express';
-import { getTodos, createTodo, updateTodo, deleteTodo } from '../controllers/todoController';
+import { getTodos, getTodoById, createTodo, updateTodo, deleteTodo } from '../controllers/todoController';
 import { validateTodo, validateUpdateTodo } from '../middlewares/validator';
 
 const router = Router();
 
+// verifyToken TIDAK dipasang di sini
+// Sudah dipasang sekali di routes/index.ts untuk semua route /todos
+
 // GET /api/todos — Ambil semua todo milik user
 router.get('/', getTodos);
+
+// GET /api/todos/:id — Ambil satu todo berdasarkan ID
+router.get('/:id', getTodoById);
 
 // POST /api/todos — Tambah todo baru
 router.post('/', validateTodo, createTodo);
