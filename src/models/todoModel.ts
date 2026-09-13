@@ -17,22 +17,20 @@ export const TodoModel = {
     },
 
     // Update task atau status is_completed
-    // userId dipakai untuk memastikan hanya pemilik yang bisa update
     update: async (id: number, task: string, isCompleted: boolean, userId: number) => {
         const [result]: any = await pool.query(
             'UPDATE todos SET task = ?, is_completed = ? WHERE id = ? AND user_id = ?',
             [task, isCompleted, id, userId]
         );
-        return result.affectedRows; // 0 = tidak ada yang diupdate, 1 = berhasil
+        return result.affectedRows;
     },
 
     // Hapus todo berdasarkan id dan userId
-    // userId dipakai untuk memastikan hanya pemilik yang bisa hapus
     delete: async (id: number, userId: number) => {
         const [result]: any = await pool.query(
             'DELETE FROM todos WHERE id = ? AND user_id = ?',
             [id, userId]
         );
-        return result.affectedRows; // 0 = tidak ada yang dihapus, 1 = berhasil
+        return result.affectedRows;
     }
 };

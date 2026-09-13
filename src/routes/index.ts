@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import authRoutes from './authRoutes';
 import todoRoutes from './todoRoutes';
+import { verifyToken } from '../middlewares/authMiddleware';
 
 const router = Router();
 
-// Daftarkan semua route di sini
-// Semua prefix sudah ditambahkan /api di app.ts
-router.use('/auth', authRoutes);   // → /api/auth/register, /api/auth/login
-router.use('/todos', todoRoutes);  // → /api/todos, /api/todos/:id
+
+router.use('/auth', authRoutes);
+router.use('/todos', verifyToken, todoRoutes);
 
 export default router;
