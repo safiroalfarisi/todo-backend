@@ -1,20 +1,39 @@
 import { Request, Response } from 'express';
 import { TodoModel } from '../models/todoModel';
 import type { CreateTodoRequest, UpdateTodoRequest, TodoResponse, TodoRow } from '../types/todo';
-import { sendSuccess, sendError } from '../utils/response';
+import type { PaginationMeta } from '../types/common';
+import { sendSuccess, sendSuccessPagination, sendError } from '../utils/response';
 
-// GET /api/todos — Ambil semua todo milik user yang sedang login
+const parsePositiveInt = (value: unknown, fallback: number): number => {
+    const parsed = Number(value);
+    return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+};
+
 export const getTodos = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user.id;
+    const page = parsePositiveInt(req.query.page, 1);
+    const perPage = Math.min(parsePositiveInt(req.query.perPage, 10), 10);
+    const offset = (page - 1) * perPage;
+
     try {
-        const todos = await TodoModel.getByUserId(userId);
+        const [todos, total] = await Promise.all([
+            TodoModel.getByUserId(userId, perPage, offset),
+            TodoModel.countByUserId(userId)
+        ]);
         const data: TodoResponse[] = (todos as TodoRow[]).map(({ id, task, is_completed }) => ({
             id,
             todo: task,
             completed: Boolean(is_completed)
         }));
-        sendSuccess(res, 'Berhasil!', data);
-    } catch {
+        const pagination: PaginationMeta = {
+            page,
+            perPage,
+            total,
+            totalPages: Math.ceil(total / perPage)
+        };
+        sendSuccessPagination(res, 'Berhasil!', data, pagination);
+    } catch (error) {
+      console.log(error);
         sendError(res, 'Gagal mengambil data.', 500);
     }
 };

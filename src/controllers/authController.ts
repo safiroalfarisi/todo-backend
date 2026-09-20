@@ -16,7 +16,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
             sendError(res, 'Username atau Email sudah terdaftar!', 409);
             return;
         }
-        sendError(res, 'Error server.', 500);
+      sendError(res, 'Error server.', 500);
     }
 };
 
